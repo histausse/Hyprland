@@ -1046,7 +1046,8 @@ void CInputManager::newTouchDevice(wlr_input_device* pDevice) {
 void CInputManager::setTouchDeviceConfigs() {
     // The rotation matrices.
     // The third row is always 0 0 1 and is not expected by `libinput_device_config_calibration_set_matrix`
-    const float MATRICES[4][6] = {
+    const int NB_MATRICES = 4;
+    const float MATRICES[NB_MATRICES][6] = {
        {
         1, 0, 0,
         0, 1, 0
@@ -1064,7 +1065,6 @@ void CInputManager::setTouchDeviceConfigs() {
         -1, 0, 1
        }
     };
-    const int NB_MATRICES = 4;
     for (auto& m : m_lTouchDevices) {
         const auto PTOUCHDEV = &m;
 
@@ -1072,11 +1072,6 @@ void CInputManager::setTouchDeviceConfigs() {
         transform(devname.begin(), devname.end(), devname.begin(), ::tolower);
 
         const auto HASCONFIG = g_pConfigManager->deviceConfigExists(devname);
-
-        if (HASCONFIG)
-            Debug::log(LOG, "Touch Screen %s has config", devname.c_str());
-        else
-            Debug::log(LOG, "Touch Screen %s has no config", devname.c_str());
 
         if (wlr_input_device_is_libinput(m.pWlrDevice)) {
             const auto LIBINPUTDEV = (libinput_device*)wlr_libinput_get_device_handle(m.pWlrDevice);
